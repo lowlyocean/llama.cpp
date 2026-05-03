@@ -60,7 +60,7 @@ struct server_model_meta {
     json loaded_info; // info to be reflected via /v1/models endpoint
     int exit_code = 0; // exit code of the model instance process (only valid if status == FAILED)
     int stop_timeout = 0; // seconds to wait before force-killing the model instance during shutdown
-    mtmd_caps multimodal; // multimodal capabilities
+    int32_t priority = 0; // priority for preemptive scheduling (0 = normal)
 
     bool is_ready() const {
         return status == SERVER_MODEL_STATUS_LOADED;
@@ -97,8 +97,8 @@ private:
     std::condition_variable cv_stop;
     std::set<std::string> stopping_models;
 
-    // set to true while load_models() is executing a reload; load() will wait until clear
-    bool is_reloading = false;
+    // for priority scheduling: track pending request counts per model
+    std::map<std::string, int> pending_counts;
 
     common_preset_context ctx_preset;
 
@@ -156,6 +156,15 @@ public:
     // proxy an HTTP request to the model instance
     server_http_res_ptr proxy_request(const server_http_req & req, const std::string & method, const std::string & name, bool update_last_used);
 
+    // priority-aware proxy request with preemption and drain window
+    server_http_res_ptr proxy_request_priority(const server_http_req & req, const std::string & method, const std::string & name, bool update_last_used);
+
+    // check if a model has pending requests beyond the one being served
+    bool has_pending_requests(const std::string & name);
+
+    // get the running model's name (thread-safe, returns empty if none)
+    std::string get_running_model_name();
+
     // return true if the current process is a child server instance
     static bool is_child_server();
 
@@ -194,6 +203,7 @@ struct server_models_routes {
     server_http_context::handler_t get_router_props;
     server_http_context::handler_t proxy_get;
     server_http_context::handler_t proxy_post;
+    server_http_context::handler_t proxy_post_priority;
     server_http_context::handler_t get_router_models;
     server_http_context::handler_t post_router_models_load;
     server_http_context::handler_t post_router_models_unload;
