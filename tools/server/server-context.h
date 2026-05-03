@@ -68,7 +68,7 @@ struct server_context {
     // terminate main loop (will unblock start_loop)
     void terminate();
 
-    // get the underlaying llama_context, can return nullptr if sleeping
+    // get the underlaying llama_context
     // not thread-safe, should only be used from the main thread
     llama_context * get_llama_context() const;
 
@@ -79,9 +79,6 @@ struct server_context {
     // not thread-safe, should only be used from the main thread
     server_context_meta get_meta() const;
 
-    // register a callback to be called when sleeping state changes
-    // must be set before load_model() is called
-    void on_sleeping_changed(std::function<void(bool)> callback);
 };
 
 
@@ -147,5 +144,5 @@ private:
 
     server_queue & queue_tasks;
     server_response & queue_results;
-    std::unique_ptr<server_res_generator> create_response(bool bypass_sleep = false);
+    std::unique_ptr<server_res_generator> create_response();
 };

@@ -14,18 +14,16 @@
 /**
  * state diagram:
  *
- * UNLOADED ──► LOADING ──► LOADED ◄──── SLEEPING
- *  ▲            │            │               ▲
- *  └───failed───┘            │               │
- *  ▲                         └──sleeping─────┘
+ * UNLOADED ──► LOADING ──► LOADED
+ *  ▲            │            │
+ *  └───failed───┘            │
  *  └────────unloaded─────────┘
  */
 enum server_model_status {
     // TODO: also add downloading state when the logic is added
     SERVER_MODEL_STATUS_UNLOADED,
     SERVER_MODEL_STATUS_LOADING,
-    SERVER_MODEL_STATUS_LOADED,
-    SERVER_MODEL_STATUS_SLEEPING
+    SERVER_MODEL_STATUS_LOADED
 };
 
 static server_model_status server_model_status_from_string(const std::string & status_str) {
@@ -38,9 +36,6 @@ static server_model_status server_model_status_from_string(const std::string & s
     if (status_str == "loaded") {
         return SERVER_MODEL_STATUS_LOADED;
     }
-    if (status_str == "sleeping") {
-        return SERVER_MODEL_STATUS_SLEEPING;
-    }
     throw std::runtime_error("invalid server model status");
 }
 
@@ -49,7 +44,6 @@ static std::string server_model_status_to_string(server_model_status status) {
         case SERVER_MODEL_STATUS_UNLOADED: return "unloaded";
         case SERVER_MODEL_STATUS_LOADING:  return "loading";
         case SERVER_MODEL_STATUS_LOADED:   return "loaded";
-        case SERVER_MODEL_STATUS_SLEEPING: return "sleeping";
         default:                           return "unknown";
     }
 }
@@ -73,7 +67,7 @@ struct server_model_meta {
     }
 
     bool is_running() const {
-        return status == SERVER_MODEL_STATUS_LOADED || status == SERVER_MODEL_STATUS_LOADING || status == SERVER_MODEL_STATUS_SLEEPING;
+        return status == SERVER_MODEL_STATUS_LOADED || status == SERVER_MODEL_STATUS_LOADING;
     }
 
     bool is_failed() const {
@@ -169,9 +163,7 @@ public:
     // return the monitoring thread (to be joined by the caller)
     static std::thread setup_child_server(const std::function<void(int)> & shutdown_handler, const json & model_info);
 
-    // notify the router server that the sleeping state has changed
-    static void notify_router_sleeping_state(bool sleeping);
-};
+    };
 
 struct server_models_routes {
     common_params params;

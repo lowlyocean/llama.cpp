@@ -228,47 +228,20 @@ For the full list of features, please refer to [server's changelog](https://gith
 | `--prefill-assistant, --no-prefill-assistant` | whether to prefill the assistant's response if the last message is an assistant message (default: prefill enabled)<br/>when this flag is set, if the last message is an assistant message then it will be treated as a full message and not prefilled<br/><br/>(env: LLAMA_ARG_PREFILL_ASSISTANT) |
 | `-sps, --slot-prompt-similarity SIMILARITY` | how much the prompt of a request must match the prompt of a slot in order to use that slot (default: 0.10, 0.0 = disabled) |
 | `--lora-init-without-apply` | load LoRA adapters without applying them (apply later via POST /lora-adapters) (default: disabled) |
-| `--sleep-idle-seconds SECONDS` | number of seconds of idleness after which the server will sleep (default: -1; -1 = disabled) |
-| `--spec-draft-hf, -hfd, -hfrd, --hf-repo-draft <user>/<model>[:quant]` | Same as --hf-repo, but for the draft model (default: unused)<br/>(env: LLAMA_ARG_SPEC_DRAFT_HF_REPO) |
-| `--spec-draft-threads, -td, --threads-draft N` | number of threads to use during generation (default: same as --threads) |
-| `--spec-draft-threads-batch, -tbd, --threads-batch-draft N` | number of threads to use during batch and prompt processing (default: same as --threads-draft) |
-| `--spec-draft-cpu-mask, -Cd, --cpu-mask-draft M` | Draft model CPU affinity mask. Complements cpu-range-draft (default: same as --cpu-mask) |
-| `--spec-draft-cpu-range, -Crd, --cpu-range-draft lo-hi` | Ranges of CPUs for affinity. Complements --cpu-mask-draft |
-| `--spec-draft-cpu-strict, --cpu-strict-draft <0\|1>` | Use strict CPU placement for draft model (default: same as --cpu-strict) |
-| `--spec-draft-prio, --prio-draft N` | set draft process/thread priority : 0-normal, 1-medium, 2-high, 3-realtime (default: 0) |
-| `--spec-draft-poll, --poll-draft <0\|1>` | Use polling to wait for draft model work (default: same as --poll) |
-| `--spec-draft-cpu-mask-batch, -Cbd, --cpu-mask-batch-draft M` | Draft model CPU affinity mask. Complements cpu-range-draft (default: same as --cpu-mask) |
-| `--spec-draft-cpu-strict-batch, --cpu-strict-batch-draft <0\|1>` | Use strict CPU placement for draft model (default: --cpu-strict-draft) |
-| `--spec-draft-prio-batch, --prio-batch-draft N` | set draft process/thread priority : 0-normal, 1-medium, 2-high, 3-realtime (default: 0) |
-| `--spec-draft-poll-batch, --poll-batch-draft <0\|1>` | Use polling to wait for draft model work (default: --poll-draft) |
-| `--spec-draft-override-tensor, -otd, --override-tensor-draft <tensor name pattern>=<buffer type>,...` | override tensor buffer type for draft model |
-| `--spec-draft-cpu-moe, -cmoed, --cpu-moe-draft` | keep all Mixture of Experts (MoE) weights in the CPU for the draft model<br/>(env: LLAMA_ARG_SPEC_DRAFT_CPU_MOE) |
-| `--spec-draft-n-cpu-moe, --spec-draft-ncmoe, -ncmoed, --n-cpu-moe-draft N` | keep the Mixture of Experts (MoE) weights of the first N layers in the CPU for the draft model<br/>(env: LLAMA_ARG_SPEC_DRAFT_N_CPU_MOE) |
-| `--spec-draft-n-max N` | number of tokens to draft for speculative decoding (default: 16)<br/>(env: LLAMA_ARG_SPEC_DRAFT_N_MAX) |
-| `--spec-draft-n-min N` | minimum number of draft tokens to use for speculative decoding (default: 0)<br/>(env: LLAMA_ARG_SPEC_DRAFT_N_MIN) |
-| `--spec-draft-p-split, --draft-p-split P` | speculative decoding split probability (default: 0.10)<br/>(env: LLAMA_ARG_SPEC_DRAFT_P_SPLIT) |
-| `--spec-draft-p-min, --draft-p-min P` | minimum speculative decoding probability (greedy) (default: 0.75)<br/>(env: LLAMA_ARG_SPEC_DRAFT_P_MIN) |
-| `--spec-draft-device, -devd, --device-draft <dev1,dev2,..>` | comma-separated list of devices to use for offloading the draft model (none = don't offload)<br/>use --list-devices to see a list of available devices |
-| `--spec-draft-ngl, -ngld, --gpu-layers-draft, --n-gpu-layers-draft N` | max. number of draft model layers to store in VRAM, either an exact number, 'auto', or 'all' (default: auto)<br/>(env: LLAMA_ARG_N_GPU_LAYERS_DRAFT) |
-| `--spec-draft-model, -md, --model-draft FNAME` | draft model for speculative decoding (default: unused)<br/>(env: LLAMA_ARG_SPEC_DRAFT_MODEL) |
-| `--spec-type none,draft-simple,draft-eagle3,draft-mtp,ngram-simple,ngram-map-k,ngram-map-k4v,ngram-mod,ngram-cache` | comma-separated list of types of speculative decoding to use (default: none)<br/><br/>(env: LLAMA_ARG_SPEC_TYPE) |
-| `--spec-ngram-mod-n-min N` | minimum number of ngram tokens to use for ngram-based speculative decoding (default: 48) |
-| `--spec-ngram-mod-n-max N` | maximum number of ngram tokens to use for ngram-based speculative decoding (default: 64) |
-| `--spec-ngram-mod-n-match N` | ngram-mod lookup length (default: 24) |
-| `--spec-ngram-simple-size-n N` | ngram size N for ngram-simple speculative decoding, length of lookup n-gram (default: 12) |
-| `--spec-ngram-simple-size-m N` | ngram size M for ngram-simple speculative decoding, length of draft m-gram (default: 48) |
-| `--spec-ngram-simple-min-hits N` | minimum hits for ngram-simple speculative decoding (default: 1) |
-| `--spec-ngram-map-k-size-n N` | ngram size N for ngram-map-k speculative decoding, length of lookup n-gram (default: 12) |
-| `--spec-ngram-map-k-size-m N` | ngram size M for ngram-map-k speculative decoding, length of draft m-gram (default: 48) |
-| `--spec-ngram-map-k-min-hits N` | minimum hits for ngram-map-k speculative decoding (default: 1) |
-| `--spec-ngram-map-k4v-size-n N` | ngram size N for ngram-map-k4v speculative decoding, length of lookup n-gram (default: 12) |
-| `--spec-ngram-map-k4v-size-m N` | ngram size M for ngram-map-k4v speculative decoding, length of draft m-gram (default: 48) |
-| `--spec-ngram-map-k4v-min-hits N` | minimum hits for ngram-map-k4v speculative decoding (default: 1) |
-| `--draft, --draft-n, --draft-max N` | the argument has been removed. use --spec-draft-n-max or --spec-ngram-mod-n-max<br/>(env: LLAMA_ARG_DRAFT_MAX) |
-| `--draft-min, --draft-n-min N` | the argument has been removed. use --spec-draft-n-min or --spec-ngram-mod-n-min<br/>(env: LLAMA_ARG_DRAFT_MIN) |
-| `--spec-ngram-size-n N` | the argument has been removed. use the respective --spec-ngram-*-size-n or --spec-ngram-mod-n-match |
-| `--spec-ngram-size-m N` | the argument has been removed. use the respective --spec-ngram-*-size-m |
-| `--spec-ngram-min-hits N` | the argument has been removed. use the respective --spec-ngram-*-min-hits |
+| `-td, --threads-draft N` | number of threads to use during generation (default: same as --threads) |
+| `-tbd, --threads-batch-draft N` | number of threads to use during batch and prompt processing (default: same as --threads-draft) |
+| `--draft, --draft-n, --draft-max N` | number of tokens to draft for speculative decoding (default: 16)<br/>(env: LLAMA_ARG_DRAFT_MAX) |
+| `--draft-min, --draft-n-min N` | minimum number of draft tokens to use for speculative decoding (default: 0)<br/>(env: LLAMA_ARG_DRAFT_MIN) |
+| `--draft-p-min P` | minimum speculative decoding probability (greedy) (default: 0.75)<br/>(env: LLAMA_ARG_DRAFT_P_MIN) |
+| `-cd, --ctx-size-draft N` | size of the prompt context for the draft model (default: 0, 0 = loaded from model)<br/>(env: LLAMA_ARG_CTX_SIZE_DRAFT) |
+| `-devd, --device-draft <dev1,dev2,..>` | comma-separated list of devices to use for offloading the draft model (none = don't offload)<br/>use --list-devices to see a list of available devices |
+| `-ngld, --gpu-layers-draft, --n-gpu-layers-draft N` | max. number of draft model layers to store in VRAM, either an exact number, 'auto', or 'all' (default: auto)<br/>(env: LLAMA_ARG_N_GPU_LAYERS_DRAFT) |
+| `-md, --model-draft FNAME` | draft model for speculative decoding (default: unused)<br/>(env: LLAMA_ARG_MODEL_DRAFT) |
+| `--spec-replace TARGET DRAFT` | translate the string in TARGET into DRAFT if the draft model and main model are not compatible |
+| `--spec-type [none\|ngram-cache\|ngram-simple\|ngram-map-k\|ngram-map-k4v\|ngram-mod]` | type of speculative decoding to use when no draft model is provided (default: none)<br/><br/>(env: LLAMA_ARG_SPEC_TYPE) |
+| `--spec-ngram-size-n N` | ngram size N for ngram-simple/ngram-map speculative decoding, length of lookup n-gram (default: 12) |
+| `--spec-ngram-size-m N` | ngram size M for ngram-simple/ngram-map speculative decoding, length of draft m-gram (default: 48) |
+| `--spec-ngram-min-hits N` | minimum hits for ngram-map speculative decoding (default: 1) |
 | `-mv, --model-vocoder FNAME` | vocoder model for audio generation (default: unused) |
 | `--tts-use-guide-tokens` | Use guide tokens to improve TTS word recall |
 | `--embd-gemma-default` | use default EmbeddingGemma model (note: can download weights from the internet) |
@@ -834,9 +807,8 @@ By default, it is read-only. To make POST request to change global properties, y
     "vision": false
   },
   "media_marker": "<__media_YoNhud46VdDqbuFmKYEO9PY7A4ARzRfg__>",
-  "build_info": "b(build number)-(build commit hash)",
-  "is_sleeping": false
-}
+  "build_info": "b(build number)-(build commit hash)"
+ }
 ```
 
 - `default_generation_settings` - the default generation settings for the `/completion` endpoint, which has the same fields as the `generation_settings` response object from the `/completion` endpoint.
@@ -845,7 +817,6 @@ By default, it is read-only. To make POST request to change global properties, y
 - `chat_template` - the model's original Jinja2 prompt template
 - `chat_template_caps` - capabilities of the chat template (see `common/jinja/caps.h` for more info)
 - `modalities` - the list of supported modalities
-- `is_sleeping` - sleeping status, see [Sleeping on idle](#sleeping-on-idle)
 
 ### POST `/props`: Change server global properties.
 
@@ -1711,9 +1682,9 @@ The `status` object can be:
 
 ```json
 "status": {
-  "value": "sleeping",
-  "args": ["llama-server", "-ctx", "4096"]
-}
+   "value": "loaded",
+   "args": ["llama-server", "-ctx", "4096"]
+ }
 ```
 
 ### POST `/models/load`: Load a model
@@ -1773,19 +1744,6 @@ Example of an error:
     }
 }
 ```
-
-## Sleeping on Idle
-
-The server supports an automatic sleep mode that activates after a specified period of inactivity (no incoming tasks). This feature, introduced in [PR #18228](https://github.com/ggml-org/llama.cpp/pull/18228), can be enabled using the `--sleep-idle-seconds` command-line argument. It works seamlessly in both single-model and multi-model configurations.
-
-When the server enters sleep mode, the model and its associated memory (including the KV cache) are unloaded from RAM to conserve resources. Any new incoming task will automatically trigger the model to reload.
-
-The sleeping status can be retrieved from the `GET /props` endpoint (or `/props?model=(model_name)` in router mode).
-
-Note that the following endpoints are exempt from being considered as incoming tasks. They do not trigger model reloading and do not reset the idle timer:
-- `GET /health`
-- `GET /props`
-- `GET /models`
 
 ## More examples
 
