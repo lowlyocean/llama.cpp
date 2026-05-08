@@ -56,6 +56,7 @@ struct server_model_meta {
     int port = 0;
     server_model_status status = SERVER_MODEL_STATUS_UNLOADED;
     int64_t last_used = 0; // for LRU unloading
+    int64_t idle_start = 0; // for idle timeout: when the model became idle (timestamp from ggml_time_ms())
     std::vector<std::string> args; // args passed to the model instance, will be populated by render_args()
     json loaded_info; // info to be reflected via /v1/models endpoint
     int exit_code = 0; // exit code of the model instance process (only valid if status == FAILED)
@@ -107,6 +108,14 @@ private:
     std::vector<std::string> base_env;
     common_preset base_preset; // base preset from llama-server CLI args
 
+    // idle timeout in seconds (0 = disabled)
+    int idle_timeout = 0;
+    std::thread idle_thread;
+    std::atomic<bool> idle_stopped{false};
+    void idle_loop();
+    void idle_thread_start();
+    void idle_thread_stop();
+
     void update_meta(const std::string & name, const server_model_meta & meta);
 
     // unload least recently used models if the limit is reached
@@ -117,6 +126,7 @@ private:
 
 public:
     server_models(const common_params & params, int argc, char ** argv);
+    ~server_models();
 
     // (re-)load the list of models from various sources and prepare the metadata mapping
     // - if this is called the first time, simply populate the metadata
@@ -226,7 +236,8 @@ public:
                       const std::map<std::string, uploaded_file> & files,
                       const std::function<bool()> should_stop,
                       int32_t timeout_read,
-                      int32_t timeout_write
+                      int32_t timeout_write,
+                      std::function<void(const std::string &)> on_chunk = nullptr
                       );
     ~server_http_proxy() {
         if (cleanup) {
